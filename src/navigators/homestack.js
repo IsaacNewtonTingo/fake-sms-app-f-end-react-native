@@ -27,7 +27,7 @@ export default function HomeStack() {
         name="MessageDetails"
         component={MessageDetails}
         options={({route}) => ({
-          title: route.params.senderName,
+          title: route.params.listName,
           headerStyle: {
             backgroundColor: '#29293d',
           },
