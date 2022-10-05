@@ -28,6 +28,10 @@ export default function Home({navigation}) {
   const [isPosting, setIsPosting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
+  const [code, setCode] = useState('');
+  const [amount, setAmount] = useState('');
+  const [account, setAccount] = useState('');
+  const [balance, setBalance] = useState('1045.00');
   const [createdAt, setCreatedAt] = useState('');
 
   const [message, setMessage] = useState('');

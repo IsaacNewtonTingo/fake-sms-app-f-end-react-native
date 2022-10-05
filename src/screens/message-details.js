@@ -74,6 +74,9 @@ export default function MessageDetails({route, navigation}) {
 
       <View style={styles.cantContainer}>
         <Text style={styles.cantText}>Can't reply to this conversation</Text>
+        <Text style={{textDecorationLine: 'underline', color: 'blue'}}>
+          Learn More
+        </Text>
       </View>
     </ScrollView>
   );
@@ -96,9 +99,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
     height: 50,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   cantText: {},
   timeText: {
