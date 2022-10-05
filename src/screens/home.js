@@ -1,25 +1,22 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   TouchableOpacity,
   Text,
   Image,
   StyleSheet,
-  ScrollView,
   FlatList,
   TextInput,
   Modal,
   Alert,
   ActivityIndicator,
-  RefreshControl,
 } from 'react-native';
 const messages = require('../data/default-messages.json');
 
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
-import axios from 'axios';
 
-import dateFormat, {masks} from 'dateformat';
+import dateFormat from 'dateformat';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -36,17 +33,12 @@ export default function Home({navigation}) {
 
   const [message, setMessage] = useState('');
 
-  const [refreshing, setRefreshing] = useState(false);
-
   useEffect(() => {
     getFirebaseMessages();
   }, []);
 
-  const wait = timeout => {
-    return new Promise(resolve => setTimeout(resolve, timeout));
-  };
-
   async function firebasePost() {
+    setIsPosting(true);
     await firestore()
       .collection('Messages')
       .doc('MPESA')
@@ -60,23 +52,22 @@ export default function Home({navigation}) {
       .then(() => {
         Alert.alert('Posted successfully');
         setShowModal(false);
+        setIsPosting(false);
         getFirebaseMessages();
       })
       .catch(err => {
         console.log(err);
+        setIsPosting(false);
       });
   }
 
   async function getFirebaseMessages() {
-    setIsPosting(true);
     await firestore()
       .collection('Messages')
       .doc('MPESA')
       .get()
 
       .then(documentSnapshot => {
-        setIsPosting(false);
-
         if (documentSnapshot.exists) {
           setLoadingData(false);
           const messageData = documentSnapshot.data();
