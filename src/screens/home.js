@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -11,6 +11,7 @@ import {
   Modal,
   Alert,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 const messages = require('../data/default-messages.json');
 
@@ -20,21 +21,35 @@ import axios from 'axios';
 
 import dateFormat, {masks} from 'dateformat';
 
+import firestore from '@react-native-firebase/firestore';
+
 export default function Home({navigation}) {
   const [showModal, setShowModal] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
   const [code, setCode] = useState('');
-  const [amount, setAmount] = useState();
-  const [account, setAccount] = useState();
-  const [balance, setBalance] = useState();
+  const [amount, setAmount] = useState('');
+  const [account, setAccount] = useState('');
+  const [balance, setBalance] = useState('1045.00');
   const [createdAt, setCreatedAt] = useState('');
 
   const [message, setMessage] = useState('');
 
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     getMessage();
+  }, []);
+
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getMessage();
+    // wait(2000).then(() => setRefreshing(false));
   }, []);
 
   async function postMessage() {
@@ -60,18 +75,35 @@ export default function Home({navigation}) {
       });
   }
 
+  async function firebasePost() {
+    await firestore()
+      .collection('Messages')
+      .add({
+        code,
+        amount,
+        account,
+        balance,
+      })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   async function getMessage() {
     const url = 'https://fake-sms-app.herokuapp.com/api/get-message';
 
     await axios
       .get(url)
       .then(response => {
+        console.log(response.data);
         setLoadingData(false);
 
         setCode(response.data[0].code);
-        setAmount(response.data[0].amount.toString());
-        setAccount(response.data[0].account.toString());
-        setBalance(response.data[0].balance.toString());
+        setAmount(response.data[0].amount);
+        setAccount(response.data[0].account);
         setCreatedAt(response.data[0].createdAt);
 
         setMessage(
@@ -83,6 +115,8 @@ export default function Home({navigation}) {
             'shortTime',
           )} New M-PESA balance is Ksh${balance}. Transaction cost, Ksh0.00.Amount you can transact within the day is 299,775.00. Pay with M-PESA GlobalPay virtual Visa card linked to MPESA wallet. Click https://bit.ly/3LQTXIT`,
         );
+
+        setRefreshing(false);
       })
       .catch(err => {
         setLoadingData(false);
@@ -131,6 +165,9 @@ export default function Home({navigation}) {
 
       <View style={styles.flatlistContainer}>
         <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           style={{paddingTop: 20}}
           showsVerticalScrollIndicator={false}
           data={messages}
@@ -181,7 +218,6 @@ export default function Home({navigation}) {
               value={account}
               placeholderTextColor="gray"
               onChangeText={setAccount}
-              keyboardType="phone-pad"
             />
 
             <TextInput
@@ -190,7 +226,6 @@ export default function Home({navigation}) {
               value={code}
               placeholderTextColor="gray"
               onChangeText={setCode}
-              keyboardType="phone-pad"
             />
 
             <TextInput
@@ -199,12 +234,11 @@ export default function Home({navigation}) {
               value={amount}
               placeholderTextColor="gray"
               onChangeText={text => setAmount(text)}
-              keyboardType="numeric"
             />
 
             {isPosting == false ? (
               <TouchableOpacity
-                onPress={postMessage}
+                onPress={firebasePost}
                 style={[
                   styles.button,
                   {backgroundColor: '#006699', width: '80%'},

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "534199061690",
+    "project_id": "fakesms-17ba8",
+    "storage_bucket": "fakesms-17ba8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534199061690:android:cc3ce7bc86dbd34aa84683",
+        "android_client_info": {
+          "package_name": "com.f_end"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534199061690-mk450flkvnlhodmts1uf8tgvvfpb9qm0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdN5ZtM-11_1RotS6PjM6Z00Vjk672RPM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534199061690-mk450flkvnlhodmts1uf8tgvvfpb9qm0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

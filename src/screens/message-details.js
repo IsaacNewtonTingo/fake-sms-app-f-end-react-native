@@ -8,8 +8,10 @@ import {
   ScrollView,
   FlatList,
   TextInput,
+  Dimensions,
 } from 'react-native';
 
+const {width} = Dimensions.get('window');
 const messages = require('../data/default-messages.json');
 
 import dateFormat, {masks} from 'dateformat';
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: width / 1.5,
   },
   cantContainer: {
     position: 'absolute',
@@ -114,7 +117,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333',
     padding: 20,
     borderRadius: 20,
-    width: 300,
   },
   messageText: {
     color: 'white',
