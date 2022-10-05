@@ -28,10 +28,6 @@ export default function Home({navigation}) {
   const [isPosting, setIsPosting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  const [code, setCode] = useState('');
-  const [amount, setAmount] = useState('');
-  const [account, setAccount] = useState('');
-  const [balance, setBalance] = useState('1045.00');
   const [createdAt, setCreatedAt] = useState('');
 
   const [message, setMessage] = useState('');
@@ -39,88 +35,70 @@ export default function Home({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getMessage();
+    getFirebaseMessages();
   }, []);
 
   const wait = timeout => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    getMessage();
-    // wait(2000).then(() => setRefreshing(false));
-  }, []);
-
-  async function postMessage() {
-    const url = 'https://fake-sms-app.herokuapp.com/api/post-message';
-
-    setIsPosting(true);
-    await axios
-      .post(url, {
-        code,
-        amount,
-        account,
-      })
-      .then(response => {
-        Alert.alert(response.data.message);
-        setIsPosting(false);
-        console.log(response.data);
-        getMessage();
-        setShowModal(false);
-      })
-      .catch(err => {
-        console.log(err);
-        setIsPosting(false);
-      });
-  }
-
   async function firebasePost() {
     await firestore()
       .collection('Messages')
-      .add({
+      .doc('MPESA')
+      .set({
         code,
         amount,
         account,
         balance,
+        createdAt: Date.now(),
       })
-      .then(response => {
-        console.log(response);
+      .then(() => {
+        Alert.alert('Posted successfully');
+        setShowModal(false);
+        getFirebaseMessages();
       })
       .catch(err => {
         console.log(err);
       });
   }
 
-  async function getMessage() {
-    const url = 'https://fake-sms-app.herokuapp.com/api/get-message';
+  async function getFirebaseMessages() {
+    setIsPosting(true);
+    await firestore()
+      .collection('Messages')
+      .doc('MPESA')
+      .get()
 
-    await axios
-      .get(url)
-      .then(response => {
-        console.log(response.data);
-        setLoadingData(false);
+      .then(documentSnapshot => {
+        setIsPosting(false);
 
-        setCode(response.data[0].code);
-        setAmount(response.data[0].amount);
-        setAccount(response.data[0].account);
-        setCreatedAt(response.data[0].createdAt);
+        if (documentSnapshot.exists) {
+          setLoadingData(false);
+          const messageData = documentSnapshot.data();
 
-        setMessage(
-          `${code} Confirmed. Ksh${amount} sent to ZURI GENESIS CO LTD for account ${account} on ${dateFormat(
-            createdAt,
-            'shortDate',
-          )} at ${dateFormat(
-            createdAt,
-            'shortTime',
-          )} New M-PESA balance is Ksh${balance}. Transaction cost, Ksh0.00.Amount you can transact within the day is 299,775.00. Pay with M-PESA GlobalPay virtual Visa card linked to MPESA wallet. Click https://bit.ly/3LQTXIT`,
-        );
+          setCreatedAt(messageData.createdAt + 1920000);
 
-        setRefreshing(false);
+          setMessage(
+            `${messageData.code} Confirmed. Ksh${
+              messageData.amount
+            } sent to ZURI GENESIS CO LTD for account ${
+              messageData.account
+            } on ${dateFormat(
+              messageData.createdAt + 1920000,
+              'shortDate',
+            )} at ${dateFormat(
+              messageData.createdAt + 1920000,
+              'shortTime',
+            )} New M-PESA balance is Ksh${
+              messageData.balance
+            }. Transaction cost, Ksh0.00.Amount you can transact within the day is 299,775.00. Pay with M-PESA GlobalPay virtual Visa card linked to MPESA wallet. Click https://bit.ly/3LQTXIT`,
+          );
+        }
       })
       .catch(err => {
-        setLoadingData(false);
         console.log(err);
+        setIsPosting(false);
       });
   }
 
@@ -154,6 +132,7 @@ export default function Home({navigation}) {
           style={styles.input}
           placeholder="Search"
           placeholderTextColor="white"
+          editable={false}
         />
 
         <TouchableOpacity
@@ -165,9 +144,6 @@ export default function Home({navigation}) {
 
       <View style={styles.flatlistContainer}>
         <FlatList
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
           style={{paddingTop: 20}}
           showsVerticalScrollIndicator={false}
           data={messages}
