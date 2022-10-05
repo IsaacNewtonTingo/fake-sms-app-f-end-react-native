@@ -72,7 +72,7 @@ export default function Home({navigation}) {
           setLoadingData(false);
           const messageData = documentSnapshot.data();
 
-          setCreatedAt(messageData.createdAt + 1920000);
+          setCreatedAt(messageData.createdAt);
 
           setMessage(
             `${messageData.code} Confirmed. Ksh${
@@ -80,10 +80,10 @@ export default function Home({navigation}) {
             } sent to ZURI GENESIS CO LTD for account ${
               messageData.account
             } on ${dateFormat(
-              messageData.createdAt + 1920000,
+              messageData.createdAt,
               'shortDate',
             )} at ${dateFormat(
-              messageData.createdAt + 1920000,
+              messageData.createdAt,
               'shortTime',
             )} New M-PESA balance is Ksh${
               messageData.balance
