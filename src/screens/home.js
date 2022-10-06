@@ -25,9 +25,9 @@ export default function Home({navigation}) {
   const [isPosting, setIsPosting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  const [code, setCode] = useState('');
-  const [amount, setAmount] = useState('');
-  const [account, setAccount] = useState('');
+  const [code, setCode] = useState('QJ67BZMTFZ');
+  const [amount, setAmount] = useState('70.00');
+  const [account, setAccount] = useState('006');
   const [balance, setBalance] = useState('1045.00');
   const [createdAt, setCreatedAt] = useState('');
 

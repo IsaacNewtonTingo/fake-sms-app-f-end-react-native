@@ -52,6 +52,24 @@ export default function MessageDetails({route, navigation}) {
         </View>
       </View>
 
+      <View style={[styles.messageContainer, {marginTop: 20}]}>
+        <Image style={styles.icon} source={{uri: route.params.listIcon}} />
+
+        <View>
+          {/* <Text style={styles.timeText}>Today 15:27</Text> */}
+
+          <View style={styles.messageItem}>
+            <Text style={styles.messageText}>
+              QJ12ZF2078 Confirmed. Ksh1,028.00 sent to Elly Tingo 0727452815 on
+              6/10/22 at 9:24 AM. New M-PESA balance is Ksh0.00. Transaction
+              cost, Ksh22.00.Amount you can transact within the day is
+              298,697.00. Pay for goods & Services using Lipa Na M-Pesa! To
+              reverse, forward this message to 456.
+            </Text>
+          </View>
+        </View>
+      </View>
+
       <View style={styles.messageContainer}>
         <Image style={styles.icon} source={{uri: route.params.listIcon}} />
 
