@@ -16,7 +16,7 @@ const messages = require('../data/default-messages.json');
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
 
-import dateFormat from 'dateformat';
+import dateFormat, {masks} from 'dateformat';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -25,7 +25,7 @@ export default function Home({navigation}) {
   const [isPosting, setIsPosting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  const [code, setCode] = useState('QJ67BZMTFZ');
+  const [code, setCode] = useState('');
   const [amount, setAmount] = useState('70.00');
   const [account, setAccount] = useState('006');
   const [balance, setBalance] = useState('1045.00');
@@ -73,16 +73,15 @@ export default function Home({navigation}) {
           const messageData = documentSnapshot.data();
 
           setCreatedAt(messageData.createdAt);
+          setCode(messageData.code);
 
+          masks.myDate = 'dd/mm/yy';
           setMessage(
             `${messageData.code} Confirmed. Ksh${
               messageData.amount
             } sent to ZURI GENESIS CO LTD for account ${
               messageData.account
-            } on ${dateFormat(
-              messageData.createdAt,
-              'shortDate',
-            )} at ${dateFormat(
+            } on ${dateFormat(messageData.createdAt, 'myDate')} at ${dateFormat(
               messageData.createdAt,
               'shortTime',
             )} New M-PESA balance is Ksh${
@@ -239,7 +238,9 @@ export default function Home({navigation}) {
         </View>
       </Modal>
 
-      <TouchableOpacity style={styles.newChat}>
+      <TouchableOpacity
+        onPress={() => setShowModal(true)}
+        style={styles.newChat}>
         <Text style={styles.newChatText}>+</Text>
       </TouchableOpacity>
     </View>
